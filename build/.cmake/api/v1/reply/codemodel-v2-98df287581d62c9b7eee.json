@@ -1,0 +1,133 @@
+{
+	"configurations" : 
+	[
+		{
+			"directories" : 
+			[
+				{
+					"build" : ".",
+					"childIndexes" : 
+					[
+						1
+					],
+					"jsonFile" : "directory-.-Debug-f5ebdc15457944623624.json",
+					"minimumCMakeVersion" : 
+					{
+						"string" : "3.10.0"
+					},
+					"projectIndex" : 0,
+					"source" : "."
+				},
+				{
+					"build" : "src",
+					"childIndexes" : 
+					[
+						2
+					],
+					"jsonFile" : "directory-src-Debug-b6cf2213fc5053b67c22.json",
+					"minimumCMakeVersion" : 
+					{
+						"string" : "3.10.0"
+					},
+					"parentIndex" : 0,
+					"projectIndex" : 0,
+					"source" : "src"
+				},
+				{
+					"build" : "src/backend",
+					"childIndexes" : 
+					[
+						3,
+						4
+					],
+					"jsonFile" : "directory-src.backend-Debug-3815b753bcc19632a73e.json",
+					"minimumCMakeVersion" : 
+					{
+						"string" : "3.10.0"
+					},
+					"parentIndex" : 1,
+					"projectIndex" : 0,
+					"source" : "src/backend"
+				},
+				{
+					"build" : "src/backend/cpu",
+					"jsonFile" : "directory-src.backend.cpu-Debug-5f345db944b1fa62a34e.json",
+					"minimumCMakeVersion" : 
+					{
+						"string" : "3.10.0"
+					},
+					"parentIndex" : 2,
+					"projectIndex" : 0,
+					"source" : "src/backend/cpu",
+					"targetIndexes" : 
+					[
+						0
+					]
+				},
+				{
+					"build" : "src/backend/cuda",
+					"jsonFile" : "directory-src.backend.cuda-Debug-daa2f4c085282e3c5543.json",
+					"minimumCMakeVersion" : 
+					{
+						"string" : "3.10.0"
+					},
+					"parentIndex" : 2,
+					"projectIndex" : 0,
+					"source" : "src/backend/cuda",
+					"targetIndexes" : 
+					[
+						1
+					]
+				}
+			],
+			"name" : "Debug",
+			"projects" : 
+			[
+				{
+					"directoryIndexes" : 
+					[
+						0,
+						1,
+						2,
+						3,
+						4
+					],
+					"name" : "MyTorch",
+					"targetIndexes" : 
+					[
+						0,
+						1
+					]
+				}
+			],
+			"targets" : 
+			[
+				{
+					"directoryIndex" : 3,
+					"id" : "mytorch_backend_cpu::@2a10f67fcd43fa3bb7c3",
+					"jsonFile" : "target-mytorch_backend_cpu-Debug-b83f3e2d87294fff9df0.json",
+					"name" : "mytorch_backend_cpu",
+					"projectIndex" : 0
+				},
+				{
+					"directoryIndex" : 4,
+					"id" : "mytorch_backend_cuda::@109ffc743bc82c7753bf",
+					"jsonFile" : "target-mytorch_backend_cuda-Debug-8ed19cb70fb9ad561447.json",
+					"name" : "mytorch_backend_cuda",
+					"projectIndex" : 0
+				}
+			]
+		}
+	],
+	"kind" : "codemodel",
+	"paths" : 
+	{
+		"build" : "/mnt/f/pku_files/Fall2024/Programming_in_Artificial_Intelligence/hw/build",
+		"source" : "/mnt/f/pku_files/Fall2024/Programming_in_Artificial_Intelligence/hw"
+	},
+	"version" : 
+	{
+		"major" : 2,
+		"minor" : 3
+	}
+}
