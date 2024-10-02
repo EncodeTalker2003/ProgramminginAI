@@ -3,7 +3,7 @@
 #include <cstdio>
 #include <cstdlib>
 
-namespace MyTensor {
+namespace MyTorch {
 
 #define LOG(level_str, fmtstr, ...) \
 	fprintf(stderr, "[%s] (%s:%d) " fmtstr "\n", level_str, __FILE__, __LINE__, ##__VA_ARGS__)

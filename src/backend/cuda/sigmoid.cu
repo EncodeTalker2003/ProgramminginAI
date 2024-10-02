@@ -16,6 +16,7 @@ namespace MyTorch::Backend::CUDA {
 		float* output_ptr = (float*)output.data_ptr();
 		float* input_ptr = (float*)input.data_ptr();
 		sigmoid_forward_kernel<<<grid_size, block_size>>>(output_ptr, input_ptr, tot);
+		return output;
 	}
 
 	__global__ void sigmoid_backward_kernel(float* grad_input, float* grad_output, float* output, int64_t n) {

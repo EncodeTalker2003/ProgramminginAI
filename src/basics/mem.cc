@@ -6,8 +6,9 @@
 
 namespace MyTorch{
 
-	static void* allocate_data(MyTorch::Device device, size_t length) {
+	void* MemData::allocate_data(MyTorch::Device device, size_t length) {
 		void* ptr;
+		//LOG_DEBUG("Allocating memory on device with size %ld", length);
 		if (device.device_type == device_t::CPU) {
 			ptr = malloc(length);
 			if (ptr == NULL) {
@@ -23,7 +24,7 @@ namespace MyTorch{
 		return ptr;
 	}
 
-	static void free_data(MyTorch::Device device, void* ptr) {
+	void MemData::free_data(MyTorch::Device device, void* ptr) {
 		if (device.device_type == device_t::CPU) {
 			free(ptr);
 		} else {
@@ -73,6 +74,7 @@ namespace MyTorch{
 		if (device.device_type == device_t::CPU) {
 			::memset(ptr, value, length);
 		} else {
+			//printf("memset on CUDA\n");
 			device.switch_to_this_device();
 			cudaError_t err = cudaMemset(ptr, value, length);
 			if (err != cudaSuccess) {

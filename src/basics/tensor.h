@@ -1,3 +1,5 @@
+#pragma once
+
 #include "mem.h"
 #include "device.h"
 #include "log.h"
@@ -9,12 +11,13 @@ namespace MyTorch {
 		Tensor(const Device &dev, const MemData &data, const std::vector<int64_t> &siz, const int64_t &off);
 	
 	public: 
-
-		MemData mem_data;
+	
+		Device device;
 		int64_t offset;
 		std::vector<int64_t> shape;
 		std::vector<int64_t> strides;
-		Device device;
+		MemData mem_data;
+		
 
 		Tensor(const Tensor &other) = default;
 		// Create a empty tensor
@@ -25,6 +28,8 @@ namespace MyTorch {
 		static Tensor zeros(const std::vector<int64_t> &shape, const Device &device);
 		// Create a tensor with random values in [lo, hi]
 		static Tensor randu(const std::vector<int64_t> &shape, const Device &device, float lo = 0.0, float hi = 1.0);
+		// Set the value on `pos` to be `val` use memcpy
+		void set_pos_data(int pos, float val);
 
 		// Return the number of elements in the tensor
 		int64_t numel() const;

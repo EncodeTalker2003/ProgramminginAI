@@ -7,8 +7,16 @@ namespace MyTorch {
 		device_type = type;
 		device_id = id;
 		if (device_type == device_t::CUDA) {
+			unsigned long free, total;
+
+			cudaMemGetInfo(&free, &total);
+
+			LOG_DEBUG("CUDA memory: free=%lu, total=%lu\n", free, total);
+
 			cudaError_t err = cudaSetDevice(device_id);
 			if (err != cudaSuccess) {
+				// print the error
+				printf("%s\n", cudaGetErrorString(err));
 				LOG_FATAL("Failed to set device %d", device_id);
 			}
 			/*err = cudaStreamCreate(&stream);
@@ -33,13 +41,5 @@ namespace MyTorch {
 				LOG_FATAL("Failed to set device %d", device_id);
 			}
 		}
-	}
-
-	Device Device::cpu() {
-		return Device(device_t::CPU, 0);
-	}
-
-	Device Device::cuda(int id) {
-		return Device(device_t::CUDA, id);
 	}
 }

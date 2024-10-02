@@ -6,7 +6,7 @@ namespace MyTorch::Backend::CUDA {
 		return (N + kCudaThreadsNum - 1) / kCudaThreadsNum;
 	}
 	// Define the grid stride looping
-	#define CUDA_KERNEL_LOOP(i, n) \ 
+	#define CUDA_KERNEL_LOOP(i, n) \
 		for (int64_t i = blockIdx.x * blockDim.x + threadIdx.x; \
 			 i < (n); \
 			 i += blockDim.x * gridDim.x)

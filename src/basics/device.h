@@ -18,7 +18,7 @@ namespace MyTorch {
 
 		device_t device_type;
 		int device_id;
-		//cudaStream_t stream;
+		cudaStream_t stream;
 
 		Device(device_t type, int id);
 
@@ -26,8 +26,12 @@ namespace MyTorch {
 
 		void switch_to_this_device() const;
 
-		static Device cpu();
-		static Device cuda(int id = 0);
+		inline static Device cpu() {
+			return Device(device_t::CPU, 0);
+		}
+		inline static Device cuda(int id = 0) {
+			return Device(device_t::CUDA, id);
+		}
 
 		inline bool operator==(const Device &other) const {
 			return device_type == other.device_type && device_id == other.device_id;
@@ -39,3 +43,8 @@ namespace MyTorch {
 
 	};
 }
+
+/*
+1143863400
+862210384
+*/

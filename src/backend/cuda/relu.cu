@@ -17,6 +17,7 @@ namespace MyTorch::Backend::CUDA {
 		float* input_ptr = (float*)input.data_ptr();
 		float* output_ptr = (float*)output.data_ptr();
 		relu_forward_kernel<<<grid_size, block_size>>>(input_ptr, output_ptr, tot);
+		return output;
 	}
 
 	__global__ void relu_backward_kernel(float* grad_input, float* grad_output, float* input, int64_t n) {

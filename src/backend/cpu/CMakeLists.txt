@@ -4,4 +4,4 @@ add_library(mytorch_backend_cpu STATIC
 	cmp_tensor.cc
 )
 
-target_link_libraries(mytorch_backend_cpu PUBLIC  mytorch_basics)
+target_link_libraries(mytorch_backend_cpu PUBLIC mytorch_basics)

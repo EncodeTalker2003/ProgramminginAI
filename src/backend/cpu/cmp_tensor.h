@@ -1,3 +1,5 @@
+#pragma once
+
 #include "src/basics/tensor.h"
 
 namespace MyTorch::Backend::CPU {

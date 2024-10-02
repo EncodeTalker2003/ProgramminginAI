@@ -2,7 +2,7 @@
 #include <functional>
 
 namespace MyTorch{
-	Tensor::Tensor(const Device &dev, const MemData &data, const std::vector<int64_t> &siz, const int64_t &off) : device(dev), mem_data(data), shape(siz), offset(off) {
+	Tensor::Tensor(const Device &dev, const MemData &data, const std::vector<int64_t> &siz, const int64_t &off) : device(dev), offset(off), shape(siz), mem_data(data) {
 		strides.resize(shape.size());
 		if (!shape.empty()) {
 			strides[shape.size() - 1] = 1;
@@ -20,7 +20,7 @@ namespace MyTorch{
 		return res;
 	}
 
-	Tensor::Tensor(const std::vector<int64_t> &siz, const Device &dev) : device(dev), shape(siz), offset(0), mem_data(dev, numel() * sizeof(float)) {
+	Tensor::Tensor(const std::vector<int64_t> &siz, const Device &dev) : device(dev), offset(0), shape(siz), mem_data(dev, numel() * sizeof(float)) {
 		strides.resize(shape.size());
 		if (!shape.empty()) {
 			strides[shape.size() - 1] = 1;
@@ -33,28 +33,43 @@ namespace MyTorch{
 	Tensor Tensor::from_data(const std::vector<float> &data, const std::vector<int64_t> &shape, const Device &device) {
 		Tensor res(shape, Device::cpu());
 		int tot = res.numel();
-		if (tot != data.size()) {
+		if (tot != (int)data.size()) {
 			LOG_FATAL("Size mismatch in Tensor::from_data");
 		}
+		float* ptr = (float*)res.data_ptr();
 		for (int i = 0; i < tot; i++) {
-			void* ptr = res.mem_data.ptr + i * sizeof(float);
-			*(float*)ptr = data[i]; 
+			ptr[i] = data[i];
 		}
 		return res.to(device);
 	}
 
 	Tensor Tensor::zeros(const std::vector<int64_t> &shape, const Device &device) {
+		//printf("ANA\n");
 		Tensor res(shape, device);
-		memset(device, res.mem_data.ptr, 0, res.numel() * sizeof(float));
+		int tot = res.numel();
+		LOG_DEBUG("tot = %d\n", tot);
+		MyTorch::memset(device, res.mem_data.ptr, 0, res.numel() * sizeof(float));
+		//printf("JAL\n");
 		return res;
+	}
+
+	void Tensor::set_pos_data(int pos, float val) {
+		if (this->device.device_type == device_t::CPU) {
+			void* ptr = (char*)this->mem_data.ptr + pos * sizeof(float);
+			*(float*)ptr = val;
+		} else {
+			void* dst_ptr =  (char*)this->mem_data.ptr + pos * sizeof(float);
+			memcpy(this->device, dst_ptr, Device::cpu(), &val, sizeof(float));
+		}
 	}
 
 	Tensor Tensor::randu(const std::vector<int64_t> &shape, const Device &device, float lo, float hi) {
 		srand(time(NULL));
 		Tensor res(shape, device);
 		for (int i = 0; i < res.numel(); i++) {
-			void* ptr = res.mem_data.ptr + i * sizeof(float);
-			*(float*)ptr = lo + (hi - lo) * rand() / RAND_MAX;
+			
+			float val = lo + (hi - lo) * rand() / RAND_MAX;
+			res.set_pos_data(i, val);
 		}
 		return res;
 	}
@@ -62,21 +77,21 @@ namespace MyTorch{
 	int64_t Tensor::get_elem_offset(const std::vector<int64_t> &pos) const {
 		// pre-condition: pos.size() == shape.size() 
 		int res = offset;
-		for (int i = 0; i < pos.size(); i++) {
+		for (int i = 0; i < (int)pos.size(); i++) {
 			res += pos[i] * strides[i];
 		}
 		return res;
 	}
 
 	void* Tensor::data_ptr() const {
-		return mem_data.ptr + offset * sizeof(float);
+		return (char*)mem_data.ptr + offset * sizeof(float);
 	}
 
 	void* Tensor::get_elem_ptr(const std::vector<int64_t> &pos) const {
 		if (pos.size() != shape.size()) {
 			LOG_FATAL("Size mismatch in Tensor::get_elem_ptr");
 		}
-		return mem_data.ptr + get_elem_offset(pos) * sizeof(float);
+		return (char*)mem_data.ptr + get_elem_offset(pos) * sizeof(float);
 	}
 
 	Tensor Tensor::get_elem(const std::vector<int64_t> &pos) const {
@@ -87,6 +102,8 @@ namespace MyTorch{
 	}
 
 	void Tensor::print(int lim) const {
+		//printf("Begin printing\n");
+		
 		printf("Tensor(");
 		if (shape.empty()) {
 			if (this->device.device_type == device_t::CPU) {
@@ -100,10 +117,20 @@ namespace MyTorch{
 		} else {
 			// Non-scalar tensor
 			std::function<void(int, const std::vector<int64_t> &)> print_helper = [&](int cur_dim, const std::vector<int64_t> &pos) {
+				//printf("cur_dim=%d, pos.size()=%ld\n", cur_dim, pos.size());
 				if (cur_dim == (int)shape.size()) {
 					// We have reached the last dimension
 					void* ptr = this->get_elem_ptr(pos);
-					printf("%0.2f", *(float*)ptr);
+					//LOG_DEBUG("This element might be output");
+					if (this->device.device_type == device_t::CPU) {
+						printf("%0.2f", *(float*)ptr);
+					} else {
+						Device dst_device = Device::cpu();
+						void* dst_ptr = malloc(sizeof(float));
+						memcpy(dst_device, dst_ptr, this->device, ptr, sizeof(float));
+						printf("%0.2f", *(float*)dst_ptr);
+					}
+					//LOG_DEBUG("Output finished");
 				} else {
 					// We have not reached the last dimension
 					printf("[");

@@ -4,3 +4,5 @@
 /.vscode
 *.ckpt
 /report
+/build
+test.py
