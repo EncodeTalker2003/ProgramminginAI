@@ -1,2 +1,0 @@
-/usr/bin/ar qc libmytorch_backend_cpu.a CMakeFiles/mytorch_backend_cpu.dir/relu.cc.o CMakeFiles/mytorch_backend_cpu.dir/sigmoid.cc.o CMakeFiles/mytorch_backend_cpu.dir/cmp_tensor.cc.o
-/usr/bin/ranlib libmytorch_backend_cpu.a

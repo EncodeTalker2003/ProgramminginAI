@@ -1,2 +1,0 @@
-/usr/bin/ar qc libmytorch_backend.a CMakeFiles/mytorch_backend.dir/device.cc.o CMakeFiles/mytorch_backend.dir/mem.cc.o
-/usr/bin/ranlib libmytorch_backend.a
