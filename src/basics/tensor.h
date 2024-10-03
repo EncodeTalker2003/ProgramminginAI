@@ -51,6 +51,6 @@ namespace MyTorch {
 		// Return a new tensor with the same data but on the CUDA device
 		Tensor cuda(int index = 0) const;
 
-		//bool operator == (const Tensor &other) const;
+		bool operator == (const Tensor &other) const;
 	};
 }

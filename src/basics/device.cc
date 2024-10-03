@@ -11,7 +11,7 @@ namespace MyTorch {
 
 			cudaMemGetInfo(&free, &total);
 
-			LOG_DEBUG("CUDA memory: free=%lu, total=%lu\n", free, total);
+			//LOG_DEBUG("CUDA memory: free=%lu, total=%lu\n", free, total);
 
 			cudaError_t err = cudaSetDevice(device_id);
 			if (err != cudaSuccess) {

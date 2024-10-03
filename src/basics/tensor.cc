@@ -1,4 +1,5 @@
 #include "tensor.h"
+#include "src/op/cmp_tensor.h"
 #include <functional>
 
 namespace MyTorch{
@@ -46,8 +47,8 @@ namespace MyTorch{
 	Tensor Tensor::zeros(const std::vector<int64_t> &shape, const Device &device) {
 		//printf("ANA\n");
 		Tensor res(shape, device);
-		int tot = res.numel();
-		LOG_DEBUG("tot = %d\n", tot);
+		//int tot = res.numel();
+		//LOG_DEBUG("tot = %d\n", tot);
 		MyTorch::memset(device, res.mem_data.ptr, 0, res.numel() * sizeof(float));
 		//printf("JAL\n");
 		return res;
@@ -184,6 +185,10 @@ namespace MyTorch{
 
 	Tensor Tensor::cuda(int index) const {
 		return to(Device::cuda(index));
+	}
+
+	bool Tensor::operator==(const Tensor &other) const {
+		return cmp_tensor(*this, other);
 	}
 
 }

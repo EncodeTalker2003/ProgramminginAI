@@ -117,7 +117,7 @@ void test5() {
 }
 
 void test6() {
-	printf("Test 6: sigmoid on cpu\n");
+	printf("Test 6: sigmoid and tensor equality on cpu\n");
 	Tensor input = Tensor::from_data({
 		1., 2., 3., 4., 5.,
 		-1., -2., -3., -4., -5.
@@ -149,10 +149,25 @@ void test6() {
 	grad_output.print();
 	printf("Input Gradient is\n");
 	my_grad_input.print();
+	if (output == my_output) {
+		printf("Output is correct\n");
+	} else {
+		printf("Output is incorrect\n");
+	}
+	if (my_grad_input == grad_input) {
+		printf("Gradient is correct\n");
+	} else {
+		printf("Gradient is incorrect\n");
+	}
+	if (input == grad_output) {
+		printf("Input is equal to grad_output\n");
+	} else {
+		printf("Input is not equal to grad_output\n");
+	}
 }
 
 void test7() {
-	printf("Test 6: sigmoid on cpu\n");
+	printf("Test 7: sigmoid and tensor equality on cuda\n");
 	Tensor input = Tensor::from_data({
 		1., 2., 3., 4., 5.,
 		-1., -2., -3., -4., -5.
@@ -184,6 +199,21 @@ void test7() {
 	grad_output.print();
 	printf("Input Gradient is\n");
 	my_grad_input.print();
+	if (output == my_output) {
+		printf("Output is correct\n");
+	} else {
+		printf("Output is incorrect\n");
+	}
+	if (my_grad_input == grad_input) {
+		printf("Gradient is correct\n");
+	} else {
+		printf("Gradient is incorrect\n");
+	}
+	if (input == grad_output) {
+		printf("Input is equal to grad_output\n");
+	} else {
+		printf("Input is not equal to grad_output\n");
+	}
 }
 
 int main() {
