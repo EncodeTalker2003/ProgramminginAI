@@ -4,12 +4,12 @@
 #include "src/backend/cuda/mat_transpose.h"
 
 namespace MyTorch{
-	Tensor conv_forward_manual(const Tensor& image, const Tensor &kernel, OpContext &cxt) {
+	Tensor conv_forward_manual(const Tensor& image, const Tensor& kernel, OpContext &cxt) {
 		if (image.dim() != 4) {
-			LOG_ERROR("Convolution forward: Input image must be 4D tensor.");
+			LOG_FATAL("Convolution forward: Input image must be 4D tensor.");
 		}
 		if (kernel.dim() != 4) {
-			LOG_ERROR("Convolution forward: Kernel must be 4D tensor.");
+			LOG_FATAL("Convolution forward: Kernel must be 4D tensor.");
 		}
 		int64_t n = image.shape[0];
 		int64_t c_in = image.shape[1];
@@ -18,11 +18,12 @@ namespace MyTorch{
 		int64_t c_out = kernel.shape[0];
 		int64_t kh = kernel.shape[2];
 		int64_t kw = kernel.shape[3];
+		
 		if (c_in != kernel.shape[1]) {
-			LOG_ERROR("Convolution forward: Input channel must be equal to kernel channel.");
+			LOG_FATAL("Convolution forward: Input channel must be equal to kernel channel.");
 		}
 		if ((kh % 2 == 0) || (kw % 2 == 0)) {
-			LOG_ERROR("Convolution forward: Kernel size must be odd.");
+			LOG_FATAL("Convolution forward: Kernel size must be odd.");
 		}
 		Tensor im2col_ret = MyTorch::Backend::CUDA::im2col(image, kh, kw);
 		Tensor im2col_ret_reshaped = im2col_ret.reshape({n * h * w, c_in * kh * kw});
@@ -49,7 +50,7 @@ namespace MyTorch{
 		int64_t h = grad_output.shape[2];
 		int64_t w = grad_output.shape[3];
 		if ((h * w != h_w) || (c_in * kh * kw != c_in_kh_kw)) {
-			LOG_ERROR("Convolution backward: Shape mismatch.");
+			LOG_FATAL("Convolution backward: Shape mismatch.");
 		}
 		Tensor grad_prod = MyTorch::Backend::CUDA::transpose(grad_output, 0, 1).reshape({c_out, n * h * w});
 		Tensor im2col_ret_grad = MyTorch::Backend::CUDA::matmul_batch(

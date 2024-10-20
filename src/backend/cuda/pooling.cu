@@ -38,12 +38,12 @@ namespace MyTorch::Backend::CUDA {
 
 	std::pair<Tensor, Tensor> pool_forward(const Tensor &input, int pool_size) {
 		if (input.dim() < 2) {
-			LOG_ERROR("pool_forward: input should be at least 2D");
+			LOG_FATAL("pool_forward: input should be at least 2D");
 		}
 		int64_t h = input.shape[input.dim() - 2];
 		int64_t w = input.shape[input.dim() - 1];
 		if ((h % pool_size != 0) || (w % pool_size != 0)) {
-			LOG_ERROR("pool_forward: input size should be divisible by pool_size");
+			LOG_FATAL("pool_forward: input size should be divisible by pool_size");
 		}
 		int64_t batch_size = 1;
 		std::vector<int64_t> output_shape;
@@ -81,26 +81,28 @@ namespace MyTorch::Backend::CUDA {
 
 	Tensor pool_backward(const Tensor &grad_output, const Tensor &mask, int pool_size) {
 		if (grad_output.dim() < 2) {
-			LOG_ERROR("pool_backward: grad_output should be at least 2D");
+			LOG_FATAL("pool_backward: grad_output should be at least 2D");
 		}
 		if (mask.dim() < 2) {
-			LOG_ERROR("pool_backward: mask should be at least 2D");
+			LOG_FATAL("pool_backward: mask should be at least 2D");
 		}
 		if (grad_output.dim() != mask.dim()) {
-			LOG_ERROR("pool_backward: grad_output and mask should have the same shape");
+			LOG_FATAL("pool_backward: grad_output and mask should have the same shape");
 		}
 
 		int64_t batch_size = 1;
 		std::vector<int64_t> grad_input_shape;
 		for (int i = 0; i < (int)grad_output.dim() - 2; i++) {
 			if (grad_output.shape[i] != mask.shape[i]) {
-				LOG_ERROR("pool_backward: grad_output and mask should have the same shape");
+				LOG_FATAL("pool_backward: grad_output and mask should have the same shape");
 			}
 			batch_size *= grad_output.shape[i];
 			grad_input_shape.push_back(grad_output.shape[i]);
 		}
 		int64_t h = grad_output.shape[grad_output.dim() - 2] * pool_size;
 		int64_t w = grad_output.shape[grad_output.dim() - 1] * pool_size;
+		grad_input_shape.push_back(h);
+		grad_input_shape.push_back(w);
 		Tensor grad_input(grad_input_shape, grad_output.device);
 
 		dim3 blocks(batch_size, h);

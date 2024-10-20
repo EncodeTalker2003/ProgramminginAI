@@ -25,7 +25,7 @@ namespace MyTorch::Backend::CUDA {
 
 	Tensor transpose(const Tensor &input, int axis1, int axis2) {
 		if ((axis1 < 0) || (axis1 >= input.dim()) || (axis2 < 0) || (axis2 >= input.dim())) {
-			LOG_ERROR("mat_transpose: invalid axis");
+			LOG_FATAL("mat_transpose: invalid axis");
 		}
 		int64_t d1 = 1;
 		for (int i = 0; i < axis1; i++) {

@@ -133,11 +133,11 @@ namespace MyTorch{
 		if (shape.empty()) {
 			if (this->device.device_type == device_t::CPU) {
 				float x = *(float*)this->data_ptr();
-				printf("%0.2f (scalar)", x);
+				printf("%0.4f (scalar)", x);
 			} else {
 				Tensor t = this->to(Device::cpu());
 				float x = *(float*)t.data_ptr();
-				printf("%0.2f (scalar)", x);
+				printf("%0.4f (scalar)", x);
 			}
 		} else {
 			// Non-scalar tensor
@@ -148,12 +148,12 @@ namespace MyTorch{
 					void* ptr = this->get_elem_ptr(pos);
 					//LOG_DEBUG("This element might be output");
 					if (this->device.device_type == device_t::CPU) {
-						printf("%0.2f", *(float*)ptr);
+						printf("%0.4f", *(float*)ptr);
 					} else {
 						Device dst_device = Device::cpu();
 						void* dst_ptr = malloc(sizeof(float));
 						memcpy(dst_device, dst_ptr, this->device, ptr, sizeof(float));
-						printf("%0.2f", *(float*)dst_ptr);
+						printf("%0.4f", *(float*)dst_ptr);
 					}
 					//LOG_DEBUG("Output finished");
 				} else {

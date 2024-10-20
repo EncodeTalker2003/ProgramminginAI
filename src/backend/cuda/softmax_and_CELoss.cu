@@ -25,13 +25,13 @@ namespace MyTorch::Backend::CUDA {
 		float sum = 0.0;
 		for (int64_t i = threadIdx.x; i < num_classes; i += blockDim.x) {
 			float tmp = std::exp(cur_input[i] - global_max_val);
-			prob[i] = tmp;
+			prob[batch_id * num_classes + i] = tmp;
 			sum += tmp;
 		}
 		float global_sum = block_reduce_sum_broadcast(sum);
 
 		for (int64_t i = threadIdx.x; i < num_classes; i += blockDim.x) {
-			prob[i] /= global_sum;
+			prob[batch_id * num_classes + i] /= global_sum;
 		}
 
 		if (threadIdx.x == 0) {
@@ -41,13 +41,13 @@ namespace MyTorch::Backend::CUDA {
 	
 	std::pair<Tensor, Tensor> softmax_and_CELoss_forward(const Tensor &input, const Tensor &truth) {
 		if (input.dim() != 2) {
-			LOG_ERROR("softmax_and_CELoss_forward: input should be 2D");
+			LOG_FATAL("softmax_and_CELoss_forward: input should be 2D");
 		}
 		if (truth.dim() != 1) {
-			LOG_ERROR("softmax_and_CELoss_forward: truth should be 1D");
+			LOG_FATAL("softmax_and_CELoss_forward: truth should be 1D");
 		}
 		if (input.shape[0] != truth.shape[0]) {
-			LOG_ERROR("softmax_and_CELoss_forward: input and truth should have the same number of data");
+			LOG_FATAL("softmax_and_CELoss_forward: input and truth should have the same number of data");
 		}
 		int64_t batch_size = input.shape[0];
 		int64_t num_classes = input.shape[1];
@@ -88,22 +88,24 @@ namespace MyTorch::Backend::CUDA {
 
 	Tensor softmax_and_CELoss_backward(const Tensor &grad_output, const Tensor &prob, const Tensor truth) {
 		if (grad_output.dim() != 1) {
-			LOG_ERROR("softmax_and_CELoss_backward: grad_output should be 1D");
+			LOG_FATAL("softmax_and_CELoss_backward: grad_output should be 1D");
 		}
 		if (prob.dim() != 2) {
-			LOG_ERROR("softmax_and_CELoss_backward: prob should be 2D");
+			LOG_FATAL("softmax_and_CELoss_backward: prob should be 2D");
 		}
 		if (truth.dim() != 1) {
-			LOG_ERROR("softmax_and_CELoss_backward: truth should be 1D");
+			LOG_FATAL("softmax_and_CELoss_backward: truth should be 1D");
 		}
 		if (grad_output.shape[0] != prob.shape[0]) {
-			LOG_ERROR("softmax_and_CELoss_backward: grad_output and prob should have the same number of data");
+			LOG_FATAL("softmax_and_CELoss_backward: grad_output and prob should have the same number of data");
 		}
-		int64_t batch_size = grad_output.shape[0];
-		int64_t num_classes = grad_output.shape[1];
-		Tensor grad_input(prob.shape, grad_output.device);
+		int64_t batch_size = prob.shape[0];
+		int64_t num_classes = prob.shape[1];
+		Tensor grad_input(prob.shape, prob.device);
 		dim3 blocks(batch_size);
+		//printf("num_classes: %ld\n", num_classes);
 		dim3 threads(std::min(num_classes, (int64_t)kCudaThreadsNum));
+		//prob.print();
 		softmax_and_CELoss_backward_kernel<<<blocks, threads>>>(
 			(const float*)grad_output.data_ptr(), 
 			(const float*)prob.data_ptr(), 

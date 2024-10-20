@@ -32,10 +32,10 @@ namespace MyTorch::Backend::CUDA {
 
 	Tensor im2col(const Tensor &input, const int64_t kh, const int64_t kw) {
 		if (input.dim() != 4) {
-			LOG_ERROR("im2col: input should be 4D");
+			LOG_FATAL("im2col: input should be 4D");
 		}
-		if ((kh % 2 != 0) || (kw % 2 != 0)) {
-			LOG_ERROR("im2col: kernel size should be odd");
+		if ((kh % 2 == 0) || (kw % 2 == 0)) {
+			LOG_FATAL("im2col: kernel size should be odd");
 		}
 		int64_t n = input.shape[0];
 		int64_t c_in = input.shape[1];
@@ -82,10 +82,10 @@ namespace MyTorch::Backend::CUDA {
 
 	Tensor col2im(const Tensor &input, const int64_t c_in, const int64_t h, const int64_t w, const int64_t kh, const int64_t kw) {
 		if (input.dim() != 3) {
-			LOG_ERROR("col2im: input should be 3D");
+			LOG_FATAL("col2im: input should be 3D");
 		}
-		if ((kh % 2 != 0) || (kw % 2 != 0)) {
-			LOG_ERROR("col2im: kernel size should be odd");
+		if ((kh % 2 == 0) || (kw % 2 == 0)) {
+			LOG_FATAL("col2im: kernel size should be odd");
 		}
 		
 		int64_t n = input.shape[0];

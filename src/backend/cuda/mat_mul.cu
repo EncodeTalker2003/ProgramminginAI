@@ -141,7 +141,7 @@ namespace MyTorch::Backend::CUDA {
 				transpose_a,
 				transpose_b,
 				batch_cnt,
-				1ll * rowa * colb,
+				1ll * rowa * cola,
 				0,
 				1ll * rowa * colb
 			);
@@ -166,7 +166,7 @@ namespace MyTorch::Backend::CUDA {
 				transpose_a,
 				transpose_b,
 				batch_cnt,
-				1ll * rowa * colb,
+				1ll * rowa * cola,
 				1ll * rowb * colb,
 				1ll * rowa * colb
 			);

@@ -7,9 +7,9 @@ namespace MyTorch {
 		device_type = type;
 		device_id = id;
 		if (device_type == device_t::CUDA) {
-			unsigned long free, total;
+			//unsigned long free, total;
 
-			cudaMemGetInfo(&free, &total);
+			//cudaMemGetInfo(&free, &total);
 
 			//LOG_DEBUG("CUDA memory: free=%lu, total=%lu\n", free, total);
 
