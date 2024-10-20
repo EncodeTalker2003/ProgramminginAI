@@ -44,6 +44,19 @@ namespace MyTorch{
 		return res.to(device);
 	}
 
+	Tensor Tensor::from_data(const std::vector<int32_t> &data, const std::vector<int64_t> &shape, const Device &device) {
+		Tensor res(shape, Device::cpu());
+		int tot = res.numel();
+		if (tot != (int)data.size()) {
+			LOG_FATAL("Size mismatch in Tensor::from_data");
+		}
+		int32_t* ptr = (int32_t*)res.data_ptr();
+		for (int i = 0; i < tot; i++) {
+			ptr[i] = data[i];
+		}
+		return res.to(device);
+	}
+
 	Tensor Tensor::zeros(const std::vector<int64_t> &shape, const Device &device) {
 		//printf("ANA\n");
 		Tensor res(shape, device);

@@ -1,11 +1,15 @@
 #include "mat_mul.h"
 #include <cuda_runtime.h>
 #include <cublas_v2.h>
+#include <stdexcept>
 
 namespace MyTorch::Backend::CUDA {
 	cublasHandle_t handle;
 
 	class CublasHandleHolder {
+
+		public:
+		
 		CublasHandleHolder() {
 			cublasCreate(&handle);
 		}
@@ -60,7 +64,7 @@ namespace MyTorch::Backend::CUDA {
 		}
 	}
 
-	Tensor matmul(const Tensor& a, const Tensor& b, bool transpose_a = false, bool transpose_b = false) {
+	Tensor matmul(const Tensor& a, const Tensor& b, bool transpose_a, bool transpose_b) {
 		if ((a.dim() != 2) && (b.dim() != 2)) {
 			LOG_FATAL("matmul: Only support 2D tensor");
 		}
@@ -89,7 +93,7 @@ namespace MyTorch::Backend::CUDA {
 		return c;
 	}
 
-	Tensor matmul_batch(const Tensor& a, const Tensor& b, bool transpose_a = false, bool transpose_b = false) {
+	Tensor matmul_batch(const Tensor& a, const Tensor& b, bool transpose_a, bool transpose_b) {
 		if ((a.dim() == 2) && (b.dim() == 2)) {
 			return matmul(a, b, transpose_a, transpose_b);
 		} else if ((a.dim() == 2) && (b.dim() == 3)) {

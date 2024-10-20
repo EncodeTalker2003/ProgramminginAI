@@ -19,11 +19,11 @@ namespace MyTorch{
 		return MyTorch::Backend::CUDA::matmul(a, b, false, false);
 	}
 
-	std::vector<Tensor> matmul_backward_manual(const Tensor& grad_output, OpContext &cxt) {
+	std::pair<Tensor, Tensor> matmul_backward_manual(const Tensor& grad_output, OpContext &cxt) {
 		Tensor b = cxt.pop_back();
 		Tensor a = cxt.pop_back();
 		Tensor grad_a = MyTorch::Backend::CUDA::matmul(b, grad_output, false, true);
 		Tensor grad_b = MyTorch::Backend::CUDA::matmul( grad_output, a, true, false);
-		return {grad_a, grad_b};
+		return std::make_pair(grad_a, grad_b);
 	}
 }

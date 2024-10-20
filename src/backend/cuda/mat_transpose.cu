@@ -32,5 +32,6 @@ namespace MyTorch::Backend::CUDA {
 		dim3 blocks((col + BLOCK_SIZE - 1) / BLOCK_SIZE, (row + BLOCK_SIZE - 1) / BLOCK_SIZE);
 		dim3 threads(BLOCK_SIZE, BLOCK_SIZE);
 		transpose_kernel<<<blocks, threads>>>((const float*)input.data_ptr(), (float*)output.data_ptr(), row, col);
+		return output;
 	}
 }
