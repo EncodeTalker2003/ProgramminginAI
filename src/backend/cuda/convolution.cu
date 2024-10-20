@@ -60,14 +60,14 @@ namespace MyTorch::Backend::CUDA {
 					int64_t h_center = h_id + kh_id;
 					int64_t w_center = w_id + kw_id;
 					if ((h_center >= 0) && (h_center < h) && (w_center >= 0) && (w_center < w)) {
-						int64_t h_rst = kh / 2 - kh_id;
-						int64_t w_rst = kw / 2 - kw_id;
+						int64_t h_rel = kh / 2 - kh_id;
+						int64_t w_rel = kw / 2 - kw_id;
 						int64_t cur_pos = 
 							n_id * (h * w) * (kh * kw * c_in) +
 							h_center * w * (kh * kw * c_in) +
 							w_center * (kh * kw * c_in) +
 							c_id * (kh * kw) +
-							h_rst * kw + w_rst;
+							h_rel * kw + w_rel;
 						grad_sum += input[cur_pos];
 					}
 				}

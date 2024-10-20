@@ -59,6 +59,7 @@ namespace MyTorch::Backend::CUDA {
 		dim3 blocks(batch_size, h / pool_size);
 		dim3 threads(std::min(w / pool_size, (int64_t)kCudaThreadsNum));
 		pool_forward_kernel<<<blocks, threads>>>((const float*)input.data_ptr(), (float*)output.data_ptr(),  (int8_t*)mask.data_ptr(), h, w, pool_size);
+		return std::make_pair(output, mask);
 	}
 
 	__global__ void pool_backward_kernel(const float* grad_output, const int8_t* mask, float* grad_input, int64_t h, int64_t w, int pool_size) {
@@ -105,5 +106,6 @@ namespace MyTorch::Backend::CUDA {
 		dim3 blocks(batch_size, h);
 		dim3 threads(std::min(w, (int64_t)kCudaThreadsNum));
 		pool_backward_kernel<<<blocks, threads>>>((const float*)grad_output.data_ptr(), (const int8_t*)mask.data_ptr(), (float*)grad_input.data_ptr(), h, w, pool_size);
+		return grad_input;
 	}
 }

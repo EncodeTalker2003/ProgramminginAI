@@ -18,4 +18,12 @@ namespace MyTorch{
 		back_info.pop_back();
 		return res;
 	}
+
+	int64_t OpContext::get_pool_size() {
+		return pool_size;
+	}
+
+	void OpContext::save_pool_size(int64_t pool_size) {
+		this->pool_size = pool_size;
+	}
 }
