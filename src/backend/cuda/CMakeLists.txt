@@ -7,7 +7,6 @@ add_library(mytorch_backend_cuda STATIC
 	convolution.cu
 	pooling.cu
 	softmax_and_CELoss.cu
-	reduce.cuh
 )
 
 target_link_libraries(mytorch_backend_cuda PUBLIC  

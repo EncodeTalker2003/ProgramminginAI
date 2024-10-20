@@ -3,7 +3,7 @@
 #include <cuda_runtime.h>
 
 namespace MyTorch::Backend::CUDA {
-	const int BLOCK_SIZE = 16;
+	const int BLOCK_SIZE = 32;
 
 	__global__ void transpose_kernel(const float* input, float* output, int row, int col) {
 		__shared__ float sdata[BLOCK_SIZE][BLOCK_SIZE + 1];

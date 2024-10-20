@@ -2,7 +2,7 @@
 #include "src/basics/log.h"
 
 namespace MyTorch::Backend::CUDA {
-	const int kCudaThreadsNum = 256;
+	const int kCudaThreadsNum = 1024;
 	inline int CudaGetBlocks(const int64_t N) {
 		return (N + kCudaThreadsNum - 1) / kCudaThreadsNum;
 	}

@@ -24,7 +24,7 @@ namespace MyTorch {
 		Tensor(const std::vector<int64_t> &shape, const Device &device);
 		// Create a tensor with the given data
 		static Tensor from_data(const std::vector<float> &data, const std::vector<int64_t> &shape, const Device &device);
-		static Tensor from_data(const std::vector<int32_t> &data, const std::vector<int64_t> &shape, const Device &device);
+		static Tensor from_int_data(const std::vector<int32_t> &data, const std::vector<int64_t> &shape, const Device &device);
 		// Create a tensor with all 0s
 		static Tensor zeros(const std::vector<int64_t> &shape, const Device &device);
 		// Create a tensor with random values in [lo, hi]

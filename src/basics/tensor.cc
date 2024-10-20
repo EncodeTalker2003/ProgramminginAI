@@ -44,7 +44,7 @@ namespace MyTorch{
 		return res.to(device);
 	}
 
-	Tensor Tensor::from_data(const std::vector<int32_t> &data, const std::vector<int64_t> &shape, const Device &device) {
+	Tensor Tensor::from_int_data(const std::vector<int32_t> &data, const std::vector<int64_t> &shape, const Device &device) {
 		Tensor res(shape, Device::cpu());
 		int tot = res.numel();
 		if (tot != (int)data.size()) {
