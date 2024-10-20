@@ -57,6 +57,17 @@ namespace MyTorch{
 		return res.to(device);
 	}
 
+	Tensor Tensor::reshape(const std::vector<int64_t> &new_shape) const {
+		int64_t new_numel = 1;
+		for (auto x: new_shape) {
+			new_numel *= x;
+		}
+		if (new_numel != numel()) {
+			LOG_FATAL("Size mismatch in Tensor::reshape");
+		}
+		return Tensor(device, mem_data, new_shape, offset);
+	}
+
 	Tensor Tensor::zeros(const std::vector<int64_t> &shape, const Device &device) {
 		//printf("ANA\n");
 		Tensor res(shape, device);

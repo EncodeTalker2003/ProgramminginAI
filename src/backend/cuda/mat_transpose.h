@@ -6,5 +6,5 @@
 
 namespace MyTorch::Backend::CUDA {
 
-	Tensor transpose(const Tensor& input);
+	Tensor transpose(const Tensor &input, int axis1, int axis2);
 }

@@ -31,6 +31,8 @@ namespace MyTorch {
 		static Tensor randu(const std::vector<int64_t> &shape, const Device &device, float lo = 0.0, float hi = 1.0);
 		// Set the value on `pos` to be `val` use memcpy
 		void set_pos_data(int pos, float val);
+		// Reshape the tensor
+		Tensor reshape(const std::vector<int64_t> &new_shape) const;
 
 		// Return the number of elements in the tensor
 		int64_t numel() const;

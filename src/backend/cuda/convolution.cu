@@ -41,7 +41,7 @@ namespace MyTorch::Backend::CUDA {
 		int64_t c_in = input.shape[1];
 		int64_t h = input.shape[2];
 		int64_t w = input.shape[3];
-		Tensor output({n, h * w, kh * kw * c_in}, input.device);
+		Tensor output({n, h * w, c_in * kh * kw}, input.device);
 
 		dim3 blocks(n, c_in, h);
 		dim3 threads(std::min(w, (int64_t)kCudaThreadsNum));
@@ -49,7 +49,7 @@ namespace MyTorch::Backend::CUDA {
 		return output;
 	}
 
-	__global__ void col2im_kernel(const float* input, float* output, const int64_t n, const int64_t c_out, const int64_t h, const int64_t w, const int64_t kh, const int64_t kw) {
+	__global__ void col2im_kernel(const float* input, float* output, const int64_t n, const int64_t c_in, const int64_t h, const int64_t w, const int64_t kh, const int64_t kw) {
 		int64_t n_id = blockIdx.x;
 		int64_t c_id = blockIdx.y;
 		int64_t h_id = blockIdx.z;
@@ -63,9 +63,9 @@ namespace MyTorch::Backend::CUDA {
 						int64_t h_rst = kh / 2 - kh_id;
 						int64_t w_rst = kw / 2 - kw_id;
 						int64_t cur_pos = 
-							n_id * (h * w) * (kh * kw * c_out) +
-							h_center * w * (kh * kw * c_out) +
-							w_center * (kh * kw * c_out) +
+							n_id * (h * w) * (kh * kw * c_in) +
+							h_center * w * (kh * kw * c_in) +
+							w_center * (kh * kw * c_in) +
 							c_id * (kh * kw) +
 							h_rst * kw + w_rst;
 						grad_sum += input[cur_pos];
@@ -73,14 +73,14 @@ namespace MyTorch::Backend::CUDA {
 				}
 			}
 			int64_t cur_pos = 
-				n_id * c_out * h * w +
+				n_id * c_in * h * w +
 				c_id * h * w +
 				h_id * w + w_id;
 			output[cur_pos] = grad_sum;
 		}
 	}
 
-	Tensor col2im(const Tensor &input, const int64_t c_out, const int64_t h, const int64_t w, const int64_t kh, const int64_t kw) {
+	Tensor col2im(const Tensor &input, const int64_t c_in, const int64_t h, const int64_t w, const int64_t kh, const int64_t kw) {
 		if (input.dim() != 3) {
 			LOG_ERROR("col2im: input should be 3D");
 		}
@@ -89,10 +89,10 @@ namespace MyTorch::Backend::CUDA {
 		}
 		
 		int64_t n = input.shape[0];
-		Tensor output({n, c_out, h, w}, input.device);
-		dim3 blocks(n, c_out, h);
+		Tensor output({n, c_in, h, w}, input.device);
+		dim3 blocks(n, c_in, h);
 		dim3 threads(std::min(w, (int64_t)kCudaThreadsNum));
-		col2im_kernel<<<blocks, threads>>>((const float*)input.data_ptr(), (float*)output.data_ptr(), n, c_out, h, w, kh, kw);
+		col2im_kernel<<<blocks, threads>>>((const float*)input.data_ptr(), (float*)output.data_ptr(), n, c_in, h, w, kh, kw);
 		return output;
 	}
 }
