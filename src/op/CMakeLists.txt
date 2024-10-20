@@ -3,6 +3,7 @@ add_library(mytorch_op STATIC
 	relu.cc
 	sigmoid.cc
 	cmp_tensor.cc
+	mat_mul.cc
 )
 
 target_link_libraries(mytorch_op PUBLIC 

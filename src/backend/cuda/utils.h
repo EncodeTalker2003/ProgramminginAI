@@ -1,4 +1,5 @@
 #pragma once
+#include "src/basics/log.h"
 
 namespace MyTorch::Backend::CUDA {
 	const int kCudaThreadsNum = 256;

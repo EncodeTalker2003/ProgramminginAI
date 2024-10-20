@@ -33,6 +33,8 @@ namespace MyTorch {
 
 		// Return the number of elements in the tensor
 		int64_t numel() const;
+		// Return the number of dimensions of the tensor
+		int dim() const;
 		// Return the offset of the element at the given position
 		int64_t get_elem_offset(const std::vector<int64_t> &pos) const;
 		// Return the address of the data

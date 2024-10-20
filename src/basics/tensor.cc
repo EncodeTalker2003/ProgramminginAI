@@ -191,4 +191,8 @@ namespace MyTorch{
 		return cmp_tensor(*this, other);
 	}
 
+	int Tensor::dim() const {
+		return shape.size();
+	}
+
 }
