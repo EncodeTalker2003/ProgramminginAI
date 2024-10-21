@@ -211,12 +211,12 @@ void test4() {
 	printf("Input:\n");
 	input.print();
 	printf("Ground truth:\n");
-	ground_truth.print();
+	ground_truth.print_int();
 	printf("Output grad:\n");
 	output_grad.print();
 
 	Tensor loss_reference = Tensor::from_data({
-		2.3378, 1.9665, 2.6597, 2.4026, 1.9823, 2.1951, 1.9936, 1.8945, 1.9324, 2.3997
+		2.33, 1.9665, 2.6597, 2.4026, 1.9823, 2.1951, 1.9936, 1.8945, 1.9324, 2.3997
 	}, {10}, Device::cuda());
 	Tensor input_grad_reference = Tensor::from_data({
 		0.0480, -0.3464,  0.0548,  0.0271,  0.0573,  0.0269,  0.0437,  0.0385, 0.0501,
@@ -243,8 +243,8 @@ void test4() {
 
 int main() {
 	//test1();
-	test2();
+	//test2();
 	//test3();
-	//test4();
+	test4();
 	return 0;
 }

@@ -194,6 +194,74 @@ namespace MyTorch{
 		printf(", device=%s)\n", device.to_string().c_str() );
 	}
 
+	void Tensor::print_int(int lim) const {
+		//printf("Begin printing\n");
+		
+		printf("Tensor(");
+		if (shape.empty()) {
+			if (this->device.device_type == device_t::CPU) {
+				int x = *(int*)this->data_ptr();
+				printf("%d (scalar)", x);
+			} else {
+				Tensor t = this->to(Device::cpu());
+				int x = *(int*)t.data_ptr();
+				printf("%d (scalar)", x);
+			}
+		} else {
+			// Non-scalar tensor
+			std::function<void(int, const std::vector<int64_t> &)> print_helper = [&](int cur_dim, const std::vector<int64_t> &pos) {
+				//printf("cur_dim=%d, pos.size()=%ld\n", cur_dim, pos.size());
+				if (cur_dim == (int)shape.size()) {
+					// We have reached the last dimension
+					void* ptr = this->get_elem_ptr(pos);
+					//LOG_DEBUG("This element might be output");
+					if (this->device.device_type == device_t::CPU) {
+						printf("%d", *(int*)ptr);
+					} else {
+						Device dst_device = Device::cpu();
+						void* dst_ptr = malloc(sizeof(int));
+						memcpy(dst_device, dst_ptr, this->device, ptr, sizeof(int));
+						printf("%d", *(int*)dst_ptr);
+					}
+					//LOG_DEBUG("Output finished");
+				} else {
+					// We have not reached the last dimension
+					printf("[");
+					for (int64_t i = 0; i < shape[cur_dim]; ++i) {
+						if (i != 0) {
+							printf(", ");
+						}
+						std::vector<int64_t> new_pos = pos;
+						new_pos.push_back(i);
+						print_helper(cur_dim + 1, new_pos);
+						if (i == lim - 1 && i != shape[cur_dim] - 1) {
+							printf(", ...");
+							break;
+						}
+					}
+					printf("]");
+				}
+			};
+			print_helper(0, {});
+			printf(", shape=[");
+			for (int i = 0; i < (int)shape.size(); ++i) {
+				printf("%ld", shape[i]);
+				if (i != (int)shape.size() - 1) {
+					printf(", ");
+				}
+			}
+			printf("], stride=[");
+			for (int i = 0; i < (int)strides.size(); ++i) {
+				printf("%ld", strides[i]);
+				if (i != (int)strides.size() - 1) {
+					printf(", ");
+				}
+			}
+			printf("]");
+		}
+		printf(", device=%s)\n", device.to_string().c_str() );
+	}
+
 	Tensor Tensor::to(const Device &device) const {
 		if (this->device == device) {
 			return *this;

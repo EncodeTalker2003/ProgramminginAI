@@ -34,8 +34,10 @@ namespace MyTorch::Backend::CUDA {
 			prob[batch_id * num_classes + i] /= global_sum;
 		}
 
+		__syncthreads();
 		if (threadIdx.x == 0) {
-			loss[batch_id] = -std::log(prob[truth[batch_id]]);
+			//printf("batch_id: %ld	truth: %d\n", batch_id, truth[batch_id]);
+			loss[batch_id] = -std::log(prob[batch_id * num_classes + truth[batch_id]]);
 		}
 	}
 	

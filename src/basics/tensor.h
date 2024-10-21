@@ -48,6 +48,7 @@ namespace MyTorch {
 		Tensor get_elem(const std::vector<int64_t> &pos) const;
 		// Print the tensor to console 
 		void print(int lim = 16) const;
+		void print_int(int lim = 16) const;
 
 		// Return a new tensor with the same data but on the given device
 		Tensor to(const Device &device) const;
