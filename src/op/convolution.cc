@@ -42,7 +42,7 @@ namespace MyTorch{
 		Tensor kernel = cxt.pop_back();
 		int64_t n = im2col_ret.shape[0];
 		int64_t h_w = im2col_ret.shape[1];
-		int64_t c_in_kh_kw = grad_output.shape[2];
+		int64_t c_in_kh_kw = im2col_ret.shape[2];
 		int64_t c_out = kernel.shape[0];
 		int64_t c_in = kernel.shape[1];
 		int64_t kh = kernel.shape[2];

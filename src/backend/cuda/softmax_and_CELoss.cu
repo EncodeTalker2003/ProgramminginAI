@@ -31,6 +31,7 @@ namespace MyTorch::Backend::CUDA {
 		float global_sum = block_reduce_sum_broadcast(sum);
 
 		for (int64_t i = threadIdx.x; i < num_classes; i += blockDim.x) {
+			//printf("prob[%ld]: %f	global_sum: %f\n", batch_id * num_classes + i, prob[batch_id * num_classes + i],global_sum);
 			prob[batch_id * num_classes + i] /= global_sum;
 		}
 
@@ -65,6 +66,7 @@ namespace MyTorch::Backend::CUDA {
 			(float*)loss.data_ptr(), 
 			batch_size,
 			num_classes);
+		//prob.print();
 		return std::make_pair(prob, loss);
 	}
 

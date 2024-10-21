@@ -26,7 +26,7 @@ namespace MyTorch::Backend::CUDA {
 		__syncthreads();
 
 		if (wid == 0) {
-			val = (threadIdx.x < blockDim.x / WARP_SIZE) ? sdata[lane] : 0;
+			val = (threadIdx.x * WARP_SIZE < blockDim.x) ? sdata[lane] : 0;
 			val = warp_reduce_sum(val);
 		}
 		return val;
@@ -41,7 +41,7 @@ namespace MyTorch::Backend::CUDA {
 		__syncthreads();
 
 		if (wid == 0) {
-			val = sdata[lane];
+			val = (threadIdx.x * WARP_SIZE < blockDim.x ) ? sdata[lane] : 0;
 			val = warp_reduce_sum(val);
 			sdata[lane] = val;
 		}
@@ -67,7 +67,7 @@ namespace MyTorch::Backend::CUDA {
 		__syncthreads();
 
 		if (wid == 0) {
-			val = (threadIdx.x < blockDim.x / WARP_SIZE) ? sdata[lane] : 0;
+			val = (threadIdx.x * WARP_SIZE < blockDim.x) ? sdata[lane] : -1e20;
 			val = warp_reduce_max(val);
 		}
 		return val;
@@ -82,7 +82,7 @@ namespace MyTorch::Backend::CUDA {
 		__syncthreads();
 
 		if (wid == 0) {
-			val = sdata[lane];
+			val = (threadIdx.x * WARP_SIZE < blockDim.x) ? sdata[lane] : -1e20;
 			val = warp_reduce_max(val);
 			sdata[lane] = val;
 		}
