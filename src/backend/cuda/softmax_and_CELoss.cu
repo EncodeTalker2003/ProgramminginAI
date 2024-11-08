@@ -52,6 +52,9 @@ namespace MyTorch::Backend::CUDA {
 		if (input.shape[0] != truth.shape[0]) {
 			LOG_FATAL("softmax_and_CELoss_forward: input and truth should have the same number of data");
 		}
+		if (truth.data_type != data_t::INT32) {
+			LOG_FATAL("softmax_and_CELoss_forward: truth should be INT32");
+		}
 		int64_t batch_size = input.shape[0];
 		int64_t num_classes = input.shape[1];
 		Tensor prob({batch_size, num_classes}, input.device);
@@ -102,6 +105,9 @@ namespace MyTorch::Backend::CUDA {
 		}
 		if (grad_output.shape[0] != prob.shape[0]) {
 			LOG_FATAL("softmax_and_CELoss_backward: grad_output and prob should have the same number of data");
+		}
+		if (truth.data_type != data_t::INT32) {
+			LOG_FATAL("softmax_and_CELoss_backward: truth should be INT32");
 		}
 		int64_t batch_size = prob.shape[0];
 		int64_t num_classes = prob.shape[1];

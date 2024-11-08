@@ -6,9 +6,14 @@
 #include <vector>
 
 namespace MyTorch {
+	enum class data_t {
+		FLOAT32,
+		INT32
+	};
+
 	class Tensor {
 	private:
-		Tensor(const Device &dev, const MemData &data, const std::vector<int64_t> &siz, const int64_t &off);
+		Tensor(const Device &dev, const MemData &data, const std::vector<int64_t> &siz, const int64_t &off, const data_t dt);
 	
 	public: 
 	
@@ -17,11 +22,12 @@ namespace MyTorch {
 		std::vector<int64_t> shape;
 		std::vector<int64_t> strides;
 		MemData mem_data;
+		data_t data_type;
 		
 
 		Tensor(const Tensor &other) = default;
 		// Create a empty tensor
-		Tensor(const std::vector<int64_t> &shape, const Device &device);
+		Tensor(const std::vector<int64_t> &shape, const Device &device, data_t data_type = data_t::FLOAT32);
 		// Create a tensor with the given data
 		static Tensor from_data(const std::vector<float> &data, const std::vector<int64_t> &shape, const Device &device);
 		static Tensor from_int_data(const std::vector<int32_t> &data, const std::vector<int64_t> &shape, const Device &device);

@@ -3,7 +3,7 @@
 #include <functional>
 
 namespace MyTorch{
-	Tensor::Tensor(const Device &dev, const MemData &data, const std::vector<int64_t> &siz, const int64_t &off) : device(dev), offset(off), shape(siz), mem_data(data) {
+	Tensor::Tensor(const Device &dev, const MemData &data, const std::vector<int64_t> &siz, const int64_t &off, const data_t dt) : device(dev), offset(off), shape(siz), mem_data(data), data_type(dt) {
 		strides.resize(shape.size());
 		if (!shape.empty()) {
 			strides[shape.size() - 1] = 1;
@@ -21,7 +21,7 @@ namespace MyTorch{
 		return res;
 	}
 
-	Tensor::Tensor(const std::vector<int64_t> &siz, const Device &dev) : device(dev), offset(0), shape(siz), mem_data(dev, numel() * sizeof(float)) {
+	Tensor::Tensor(const std::vector<int64_t> &siz, const Device &dev, const data_t dt) : device(dev), offset(0), shape(siz), mem_data(dev, numel() * sizeof(float)), data_type(dt) {
 		strides.resize(shape.size());
 		if (!shape.empty()) {
 			strides[shape.size() - 1] = 1;
@@ -45,7 +45,7 @@ namespace MyTorch{
 	}
 
 	Tensor Tensor::from_int_data(const std::vector<int32_t> &data, const std::vector<int64_t> &shape, const Device &device) {
-		Tensor res(shape, Device::cpu());
+		Tensor res(shape, Device::cpu(), data_t::INT32);
 		int tot = res.numel();
 		if (tot != (int)data.size()) {
 			LOG_FATAL("Size mismatch in Tensor::from_data");
@@ -65,7 +65,7 @@ namespace MyTorch{
 		if (new_numel != numel()) {
 			LOG_FATAL("Size mismatch in Tensor::reshape");
 		}
-		return Tensor(device, mem_data, new_shape, offset);
+		return Tensor(device, mem_data, new_shape, offset, data_type);
 	}
 
 	Tensor Tensor::zeros(const std::vector<int64_t> &shape, const Device &device) {
@@ -123,10 +123,13 @@ namespace MyTorch{
 		if (pos.size() != shape.size()) {
 			LOG_FATAL("Size mismatch in Tensor::get_elem");
 		}
-		return Tensor(device, mem_data, {}, get_elem_offset(pos));
+		return Tensor(device, mem_data, {}, get_elem_offset(pos), data_type);
 	}
 
 	void Tensor::print(int lim) const {
+		if (data_type != data_t::FLOAT32) {
+			LOG_ERROR("Cannot print tensor with data type other than FLOAT32");
+		}
 		//printf("Begin printing\n");
 		
 		printf("Tensor(");
@@ -196,7 +199,9 @@ namespace MyTorch{
 
 	void Tensor::print_int(int lim) const {
 		//printf("Begin printing\n");
-		
+		if (data_type != data_t::INT32) {
+			LOG_ERROR("Cannot print tensor with data type other than INT32");
+		}
 		printf("Tensor(");
 		if (shape.empty()) {
 			if (this->device.device_type == device_t::CPU) {
@@ -266,7 +271,7 @@ namespace MyTorch{
 		if (this->device == device) {
 			return *this;
 		}
-		Tensor res = Tensor(shape, device);
+		Tensor res = Tensor(shape, device, data_type);
 		memcpy(device, res.data_ptr(), this->device, this->data_ptr(), numel() * sizeof(float));
 		return res;
 	}
