@@ -12,7 +12,7 @@ namespace MyTorch{
 		Output: c
 			c: Tensor of shape (n, p) where c = a @ b
 	*/
-	Tensor matmul_forward_manual(const Tensor& a, const Tensor& b, OpContext &cxt);
+	Tensor matmul_forward_manual(const std::vector<Tensor> &inputs, OpContext &cxt, void* args);
 
 	/*
 		Input:
@@ -22,4 +22,6 @@ namespace MyTorch{
 			db: Tensor of shape (m, p) where db = a^T @ dc
 		*/
 	std::pair<Tensor, Tensor> matmul_backward_manual(const Tensor& grad_output, OpContext &cxt);
+
+	Tensor matmul_forward(const Tensor &a, const Tensor &b);
 }

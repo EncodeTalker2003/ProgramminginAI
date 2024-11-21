@@ -7,7 +7,9 @@ namespace MyTorch{
 	// C(m,n) = A(m * k) * B(k * n)
 	// dL/dA = B^T * dL/dC
 	// dL/dB = dL/dC * A^T
-	Tensor matmul_forward_manual(const Tensor& a, const Tensor& b, OpContext &cxt) {
+	Tensor matmul_forward_manual(const std::vector<Tensor> &inputs, OpContext &cxt, void* args) {
+		Tensor a = inputs[0];
+		Tensor b = inputs[1];
 		if (a.device != b.device) {
 			LOG_FATAL("matmul_forward: Tensors should be on the same device");
 		}
@@ -25,5 +27,10 @@ namespace MyTorch{
 		Tensor grad_a = MyTorch::Backend::CUDA::matmul(grad_output, b, false, true);
 		Tensor grad_b = MyTorch::Backend::CUDA::matmul(a, grad_output, true, false);
 		return std::make_pair(grad_a, grad_b);
+	}
+
+	Tensor matmul_forward(const Tensor &a, const Tensor &b) {
+		OpContext cxt;
+		return matmul_forward_manual({a, b}, cxt, NULL);
 	}
 }

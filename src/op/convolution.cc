@@ -4,7 +4,9 @@
 #include "src/backend/cuda/mat_transpose.h"
 
 namespace MyTorch{
-	Tensor conv_forward_manual(const Tensor& image, const Tensor& kernel, OpContext &cxt) {
+	Tensor conv_forward_manual(const std::vector<Tensor> inputs, OpContext &cxt, void* args) {
+		Tensor image = inputs[0];
+		Tensor kernel = inputs[1];
 		if (image.dim() != 4) {
 			LOG_FATAL("Convolution forward: Input image must be 4D tensor.");
 		}
@@ -68,5 +70,10 @@ namespace MyTorch{
 		Tensor img_grad = MyTorch::Backend::CUDA::col2im(im2col_ret_grad, c_in, h, w, kh, kw);
 
 		return std::make_pair(img_grad, kernel_grad);
+	}
+
+	Tensor conv_forward(const Tensor &input, const Tensor &kernel) {
+		OpContext cxt;
+		return conv_forward_manual({input, kernel}, cxt, NULL);
 	}
 }

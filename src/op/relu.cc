@@ -3,9 +3,9 @@
 #include "src/backend/cuda/relu.h"
 
 namespace MyTorch{
-	Tensor relu_forward_manual(const Tensor& input, OpContext &cxt) {
-		Tensor res = DISPATCH_TO_BACKEND(input.device.device_type, relu_forward(input));
-		cxt.push_back(input);
+	Tensor relu_forward_manual(const std::vector<Tensor> &inputs, OpContext &cxt, void* args) {
+		Tensor res = DISPATCH_TO_BACKEND(inputs[0].device.device_type, relu_forward(inputs[0]));
+		cxt.push_back(inputs[0]);
 		return res;
 	}
 
@@ -13,5 +13,10 @@ namespace MyTorch{
 		Tensor input = cxt.pop_back();
 		Tensor res = DISPATCH_TO_BACKEND(grad_output.device.device_type, relu_backward(grad_output, input));
 		return res;
+	}
+
+	Tensor relu_forward(const Tensor &input) {
+		OpContext cxt;
+		return relu_forward_manual({input}, cxt, NULL);
 	}
 }

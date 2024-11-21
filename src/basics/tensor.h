@@ -4,6 +4,7 @@
 #include "device.h"
 #include "log.h"
 #include <vector>
+#include <string>
 
 namespace MyTorch {
 	enum class data_t {
@@ -29,8 +30,8 @@ namespace MyTorch {
 		// Create a empty tensor
 		Tensor(const std::vector<int64_t> &shape, const Device &device, data_t data_type = data_t::FLOAT32);
 		// Create a tensor with the given data
-		static Tensor from_data(const std::vector<float> &data, const std::vector<int64_t> &shape, const Device &device);
-		static Tensor from_int_data(const std::vector<int32_t> &data, const std::vector<int64_t> &shape, const Device &device);
+		static Tensor from_data(const std::vector<float> &data, const data_t data_type, const std::vector<int64_t> &shape, const Device &device);
+		static Tensor from_int_data(const std::vector<int32_t> &data, const data_t data_type, const std::vector<int64_t> &shape, const Device &device);
 		// Create a tensor with all 0s
 		static Tensor zeros(const std::vector<int64_t> &shape, const Device &device);
 		// Create a tensor with random values in [lo, hi]
@@ -53,8 +54,8 @@ namespace MyTorch {
 		// Return the element at the given position
 		Tensor get_elem(const std::vector<int64_t> &pos) const;
 		// Print the tensor to console 
+		std::string to_string(int lim = 16) const;
 		void print(int lim = 16) const;
-		void print_int(int lim = 16) const;
 
 		// Return a new tensor with the same data but on the given device
 		Tensor to(const Device &device) const;

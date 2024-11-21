@@ -31,20 +31,36 @@ namespace MyTorch{
 		}
 	}
 
-	Tensor Tensor::from_data(const std::vector<float> &data, const std::vector<int64_t> &shape, const Device &device) {
-		Tensor res(shape, Device::cpu());
-		int tot = res.numel();
-		if (tot != (int)data.size()) {
-			LOG_FATAL("Size mismatch in Tensor::from_data");
+	Tensor Tensor::from_data(const std::vector<float> &data, const data_t data_type, const std::vector<int64_t> &shape, const Device &device) {
+		if (data_type == data_t::FLOAT32) {
+			Tensor res(shape, Device::cpu());
+			int tot = res.numel();
+			if (tot != (int)data.size()) {
+				LOG_FATAL("Size mismatch in Tensor::from_data");
+			}
+			float* ptr = (float*)res.data_ptr();
+			for (int i = 0; i < tot; i++) {
+				ptr[i] = data[i];
+			}
+			return res.to(device);
+		} else {
+			Tensor res(shape, Device::cpu(), data_t::INT32);
+			int tot = res.numel();
+			if (tot != (int)data.size()) {
+				LOG_FATAL("Size mismatch in Tensor::from_data");
+			}
+			int32_t* ptr = (int32_t*)res.data_ptr();
+			for (int i = 0; i < tot; i++) {
+				ptr[i] = data[i];
+			}
+			return res.to(device);
 		}
-		float* ptr = (float*)res.data_ptr();
-		for (int i = 0; i < tot; i++) {
-			ptr[i] = data[i];
-		}
-		return res.to(device);
 	}
 
-	Tensor Tensor::from_int_data(const std::vector<int32_t> &data, const std::vector<int64_t> &shape, const Device &device) {
+	Tensor Tensor::from_int_data(const std::vector<int32_t> &data, const data_t data_type, const std::vector<int64_t> &shape, const Device &device) {
+		if (data_type != data_t::INT32) {
+			LOG_FATAL("Data type mismatch in Tensor::from_int_data");
+		}
 		Tensor res(shape, Device::cpu(), data_t::INT32);
 		int tot = res.numel();
 		if (tot != (int)data.size()) {
@@ -126,21 +142,28 @@ namespace MyTorch{
 		return Tensor(device, mem_data, {}, get_elem_offset(pos), data_type);
 	}
 
-	void Tensor::print(int lim) const {
-		if (data_type != data_t::FLOAT32) {
-			LOG_ERROR("Cannot print tensor with data type other than FLOAT32");
-		}
-		//printf("Begin printing\n");
+	std::string Tensor::to_string(int lim) const {
+		std::string res = "Tensor(";
 		
 		printf("Tensor(");
 		if (shape.empty()) {
 			if (this->device.device_type == device_t::CPU) {
-				float x = *(float*)this->data_ptr();
-				printf("%0.4f (scalar)", x);
+				if (this->data_type == data_t::FLOAT32) {
+					float x = *(float*)this->data_ptr();
+					res += std::to_string(x) + " (scalar)";
+				} else {
+					int32_t x = *(int32_t*)this->data_ptr();
+					res += std::to_string(x) + " (scalar)";
+				}
 			} else {
 				Tensor t = this->to(Device::cpu());
-				float x = *(float*)t.data_ptr();
-				printf("%0.4f (scalar)", x);
+				if (t.data_type == data_t::FLOAT32) {
+					float x = *(float*)t.data_ptr();
+					res += std::to_string(x) + " (scalar)";
+				} else {
+					int32_t x = *(int32_t*)t.data_ptr();
+					res += std::to_string(x) + " (scalar)";
+				}
 			}
 		} else {
 			// Non-scalar tensor
@@ -151,120 +174,71 @@ namespace MyTorch{
 					void* ptr = this->get_elem_ptr(pos);
 					//LOG_DEBUG("This element might be output");
 					if (this->device.device_type == device_t::CPU) {
-						printf("%0.4f", *(float*)ptr);
+						if (this->data_type == data_t::FLOAT32) {
+							float x = *(float*)ptr;
+							res += std::to_string(x);
+						} else {
+							int32_t x = *(int32_t*)ptr;
+							res += std::to_string(x);
+						}
 					} else {
 						Device dst_device = Device::cpu();
-						void* dst_ptr = malloc(sizeof(float));
-						memcpy(dst_device, dst_ptr, this->device, ptr, sizeof(float));
-						printf("%0.4f", *(float*)dst_ptr);
-					}
+						if (this->data_type == data_t::FLOAT32) {
+							void* dst_ptr = malloc(sizeof(float));
+							memcpy(dst_device, dst_ptr, this->device, ptr, sizeof(float));
+							float x = *(float*)dst_ptr;
+							res += std::to_string(x);
+						} else {
+							void* dst_ptr = malloc(sizeof(int32_t));
+							memcpy(dst_device, dst_ptr, this->device, ptr, sizeof(int32_t));
+							int32_t x = *(int32_t*)dst_ptr;
+							res += std::to_string(x);
+						}
+					} 
 					//LOG_DEBUG("Output finished");
 				} else {
 					// We have not reached the last dimension
-					printf("[");
+					res += "[";
 					for (int64_t i = 0; i < shape[cur_dim]; ++i) {
 						if (i != 0) {
-							printf(", ");
+							res += ", ";
 						}
 						std::vector<int64_t> new_pos = pos;
 						new_pos.push_back(i);
 						print_helper(cur_dim + 1, new_pos);
 						if (i == lim - 1 && i != shape[cur_dim] - 1) {
-							printf(", ...");
+							res += ", ...";
 							break;
 						}
 					}
-					printf("]");
+					res += "]";
 				}
 			};
 			print_helper(0, {});
-			printf(", shape=[");
+			res += ", shape=[";
 			for (int i = 0; i < (int)shape.size(); ++i) {
-				printf("%ld", shape[i]);
+				res += std::to_string(shape[i]);
 				if (i != (int)shape.size() - 1) {
-					printf(", ");
+					res += ", ";
 				}
 			}
-			printf("], stride=[");
+			res += "], stride=[";
 			for (int i = 0; i < (int)strides.size(); ++i) {
-				printf("%ld", strides[i]);
+				res += std::to_string(strides[i]);
 				if (i != (int)strides.size() - 1) {
-					printf(", ");
+					res += ", ";
 				}
 			}
-			printf("]");
+			res += "]";
 		}
-		printf(", device=%s)\n", device.to_string().c_str() );
+		res += ", device=";
+		res += device.to_string();
+		res += ")";
+		return res;
 	}
 
-	void Tensor::print_int(int lim) const {
-		//printf("Begin printing\n");
-		if (data_type != data_t::INT32) {
-			LOG_ERROR("Cannot print tensor with data type other than INT32");
-		}
-		printf("Tensor(");
-		if (shape.empty()) {
-			if (this->device.device_type == device_t::CPU) {
-				int x = *(int*)this->data_ptr();
-				printf("%d (scalar)", x);
-			} else {
-				Tensor t = this->to(Device::cpu());
-				int x = *(int*)t.data_ptr();
-				printf("%d (scalar)", x);
-			}
-		} else {
-			// Non-scalar tensor
-			std::function<void(int, const std::vector<int64_t> &)> print_helper = [&](int cur_dim, const std::vector<int64_t> &pos) {
-				//printf("cur_dim=%d, pos.size()=%ld\n", cur_dim, pos.size());
-				if (cur_dim == (int)shape.size()) {
-					// We have reached the last dimension
-					void* ptr = this->get_elem_ptr(pos);
-					//LOG_DEBUG("This element might be output");
-					if (this->device.device_type == device_t::CPU) {
-						printf("%d", *(int*)ptr);
-					} else {
-						Device dst_device = Device::cpu();
-						void* dst_ptr = malloc(sizeof(int));
-						memcpy(dst_device, dst_ptr, this->device, ptr, sizeof(int));
-						printf("%d", *(int*)dst_ptr);
-					}
-					//LOG_DEBUG("Output finished");
-				} else {
-					// We have not reached the last dimension
-					printf("[");
-					for (int64_t i = 0; i < shape[cur_dim]; ++i) {
-						if (i != 0) {
-							printf(", ");
-						}
-						std::vector<int64_t> new_pos = pos;
-						new_pos.push_back(i);
-						print_helper(cur_dim + 1, new_pos);
-						if (i == lim - 1 && i != shape[cur_dim] - 1) {
-							printf(", ...");
-							break;
-						}
-					}
-					printf("]");
-				}
-			};
-			print_helper(0, {});
-			printf(", shape=[");
-			for (int i = 0; i < (int)shape.size(); ++i) {
-				printf("%ld", shape[i]);
-				if (i != (int)shape.size() - 1) {
-					printf(", ");
-				}
-			}
-			printf("], stride=[");
-			for (int i = 0; i < (int)strides.size(); ++i) {
-				printf("%ld", strides[i]);
-				if (i != (int)strides.size() - 1) {
-					printf(", ");
-				}
-			}
-			printf("]");
-		}
-		printf(", device=%s)\n", device.to_string().c_str() );
+	void Tensor::print(int lim) const {
+		printf("%s\n", this->to_string(lim).c_str());
 	}
 
 	Tensor Tensor::to(const Device &device) const {

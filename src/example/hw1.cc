@@ -13,7 +13,7 @@ void test1() {
 	Tensor tensor3 = Tensor::from_data({
 		1., 2., 3., 4., 5.,
 		-1., -2., -3., -4., -5.
-	}, {2, 5}, Device::cpu());
+	}, MyTorch::data_t::FLOAT32, {2, 5}, Device::cpu());
 	tensor1.print();
 	tensor2.print();
 	tensor3.print();
@@ -27,7 +27,7 @@ void test2() {
 	Tensor tensor3 = Tensor::from_data({
 		1., 2., 3., 4., 5.,
 		-1., -2., -3., -4., -5.
-	}, {2, 5}, Device::cuda(0));
+	}, MyTorch::data_t::FLOAT32, {2, 5},  Device::cuda(0));
 	tensor1.print();
 	tensor2.print();
 	tensor3.print();
@@ -38,7 +38,7 @@ void test3() {
 	Tensor tensor1 = Tensor::from_data({
 		1., 2., 3., 4., 5.,
 		-1., -2., -3., -4., -5.
-	}, {2, 5}, Device::cuda(0));
+	}, MyTorch::data_t::FLOAT32, {2, 5}, Device::cuda(0));
 	tensor1.print();
 	Tensor tensor2 = tensor1.cpu();
 	tensor2.print();
@@ -51,25 +51,25 @@ void test4() {
 	Tensor input = Tensor::from_data({
 		1., 2., 3., 4., 5.,
 		-1., -2., -3., -4., -5.
-	}, {2, 5}, Device::cpu());
+	}, MyTorch::data_t::FLOAT32, {2, 5}, Device::cpu());
 
 	Tensor grad_output = Tensor::from_data({
 		-1., 2., -3., 4., -5.,
 		1., -2., 3., -4., 5.
-	}, {2, 5}, Device::cpu());
+	}, MyTorch::data_t::FLOAT32, {2, 5}, Device::cpu());
 
 	Tensor output = Tensor::from_data({
 		1., 2., 3., 4., 5.,
 		0., 0., 0., 0., 0.
-	}, {2, 5}, Device::cpu());
+	}, MyTorch::data_t::FLOAT32, {2, 5}, Device::cpu());
 
 	Tensor grad_input = Tensor::from_data({
 		-1., 2., -3., 4., -5.,
 		0., 0., 0., 0., 0.
-	}, {2, 5}, Device::cpu());
+	}, MyTorch::data_t::FLOAT32, {2, 5}, Device::cpu());
 
 	MyTorch::OpContext cxt;
-	Tensor my_output = MyTorch::relu_forward_manual(input, cxt);
+	Tensor my_output = MyTorch::relu_forward_manual({input}, cxt, NULL);
 	printf("Input tensor is\n");
 	input.print();
 	printf("Output tensor is\n");
@@ -86,25 +86,25 @@ void test5() {
 	Tensor input = Tensor::from_data({
 		1., 2., 3., 4., 5.,
 		-1., -2., -3., -4., -5.
-	}, {2, 5}, Device::cuda(0));
+	}, MyTorch::data_t::FLOAT32, {2, 5}, Device::cuda(0));
 
 	Tensor grad_output = Tensor::from_data({
 		-1., 2., -3., 4., -5.,
 		1., -2., 3., -4., 5.
-	}, {2, 5}, Device::cuda(0));
+	}, MyTorch::data_t::FLOAT32, {2, 5}, Device::cuda(0));
 
 	Tensor output = Tensor::from_data({
 		1., 2., 3., 4., 5.,
 		0., 0., 0., 0., 0.
-	}, {2, 5}, Device::cuda(0));
+	}, MyTorch::data_t::FLOAT32, {2, 5}, Device::cuda(0));
 
 	Tensor grad_input = Tensor::from_data({
 		-1., 2., -3., 4., -5.,
 		0., 0., 0., 0., 0.
-	}, {2, 5}, Device::cuda(0));
+	}, MyTorch::data_t::FLOAT32, {2, 5}, Device::cuda(0));
 
 	MyTorch::OpContext cxt;
-	Tensor my_output = MyTorch::relu_forward_manual(input, cxt);
+	Tensor my_output = MyTorch::relu_forward_manual({input}, cxt, NULL);
 	printf("Input tensor is\n");
 	input.print();
 	printf("Output tensor is\n");
@@ -121,25 +121,25 @@ void test6() {
 	Tensor input = Tensor::from_data({
 		1., 2., 3., 4., 5.,
 		-1., -2., -3., -4., -5.
-	}, {2, 5}, Device::cpu());
+	}, MyTorch::data_t::FLOAT32, {2, 5}, Device::cpu());
 
 	Tensor grad_output = Tensor::from_data({
 		-1., 2., -3., 4., -5.,
 		1., -2., 3., -4., 5.
-	}, {2, 5}, Device::cpu());
+	}, MyTorch::data_t::FLOAT32, {2, 5}, Device::cpu());
 
 	Tensor output = Tensor::from_data({
 		0.7310585786300049, 0.8807970779778823, 0.9525741268224334, 0.9820137900379085, 0.9933071490757153,
 		0.2689414213699951, 0.11920292202211755, 0.04742587317756678, 0.01798620996209156, 0.0066928509242848554
-	}, {2, 5}, Device::cpu());
+	}, MyTorch::data_t::FLOAT32, {2, 5}, Device::cpu());
 
 	Tensor grad_input = Tensor::from_data({
 		-0.19661193324148185, 0.20998717080701323, -0.13552997919273602, 0.07065082485316443, -0.03324028335395016, 
 		0.19661193324148185, -0.209987170807013, 0.1355299791927364, -0.07065082485316447, 0.033240283353950774
-	}, {2, 5}, Device::cpu());
+	}, MyTorch::data_t::FLOAT32, {2, 5}, Device::cpu());
 
 	MyTorch::OpContext cxt;
-	Tensor my_output = MyTorch::sigmoid_forward_manual(input, cxt);
+	Tensor my_output = MyTorch::sigmoid_forward_manual({input}, cxt, NULL);
 	printf("Input tensor is\n");
 	input.print();
 	printf("Output tensor is\n");
@@ -171,25 +171,25 @@ void test7() {
 	Tensor input = Tensor::from_data({
 		1., 2., 3., 4., 5.,
 		-1., -2., -3., -4., -5.
-	}, {2, 5}, Device::cuda(0));
+	}, MyTorch::data_t::FLOAT32, {2, 5}, Device::cuda(0));
 
 	Tensor grad_output = Tensor::from_data({
 		-1., 2., -3., 4., -5.,
 		1., -2., 3., -4., 5.
-	}, {2, 5}, Device::cuda(0));
+	}, MyTorch::data_t::FLOAT32, {2, 5}, Device::cuda(0));
 
 	Tensor output = Tensor::from_data({
 		0.7310585786300049, 0.8807970779778823, 0.9525741268224334, 0.9820137900379085, 0.9933071490757153,
 		0.2689414213699951, 0.11920292202211755, 0.04742587317756678, 0.01798620996209156, 0.0066928509242848554
-	}, {2, 5}, Device::cuda(0));
+	}, MyTorch::data_t::FLOAT32, {2, 5}, Device::cuda(0));
 
 	Tensor grad_input = Tensor::from_data({
 		-0.19661193324148185, 0.20998717080701323, -0.13552997919273602, 0.07065082485316443, -0.03324028335395016, 
 		0.19661193324148185, -0.209987170807013, 0.1355299791927364, -0.07065082485316447, 0.033240283353950774
-	}, {2, 5}, Device::cuda(0));
+	}, MyTorch::data_t::FLOAT32, {2, 5}, Device::cuda(0));
 
 	MyTorch::OpContext cxt;
-	Tensor my_output = MyTorch::sigmoid_forward_manual(input, cxt);
+	Tensor my_output = MyTorch::sigmoid_forward_manual({input}, cxt, NULL);
 	printf("Input tensor is\n");
 	input.print();
 	printf("Output tensor is\n");

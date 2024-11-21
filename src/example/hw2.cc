@@ -13,28 +13,28 @@ void test1() {
 	Tensor a = Tensor::from_data({
 		1., 2., 3.,
 		4., 5., 6.
-	}, {2, 3}, Device::cuda(0));
+	}, MyTorch::data_t::FLOAT32, {2, 3}, Device::cuda(0));
 	Tensor b = Tensor::from_data({
 		1., 2., 
 		3., 4., 
 		5., 6.
-	}, {3, 2}, Device::cuda(0));
+	}, MyTorch::data_t::FLOAT32, {3, 2}, Device::cuda(0));
 	Tensor c = Tensor::from_data({
 		22., 28.,
 		49., 64.
-	}, {2, 2}, Device::cuda(0));
+	}, MyTorch::data_t::FLOAT32, {2, 2}, Device::cuda(0));
 	MyTorch::OpContext cxt;
 	printf("a:\n");
 	a.print();
 	printf("b:\n");
 	b.print();
-	Tensor my_output = MyTorch::matmul_forward_manual(a, b, cxt);
+	Tensor my_output = MyTorch::matmul_forward_manual({a, b}, cxt, NULL);
 	printf("a @ b:\n");
 	my_output.print();
 	Tensor grad_output = Tensor::from_data({
 		1., 2.,
 		3., 4.
-	}, {2, 2}, Device::cuda(0));
+	}, MyTorch::data_t::FLOAT32, {2, 2}, Device::cuda(0));
 	auto [grad_a, grad_b] = MyTorch::matmul_backward_manual(grad_output, cxt);
 	printf("grad_a:\n");
 	grad_a.print();
@@ -56,7 +56,7 @@ void test2() {
 		0.8530, 0.1325, 0.0435, 0.3055, 0.4114,
 		0.0970, 0.3121, 0.5835, 0.9967, 0.5118,
 		0.5507, 0.8006, 0.8614, 0.6140, 0.1617
-	}, {1, 2, 5, 5}, Device::cuda());
+	}, MyTorch::data_t::FLOAT32, {1, 2, 5, 5}, Device::cuda());
 	Tensor kernel = Tensor::from_data({
 		0.1666, 0.0232, 0.0465,
 		0.1919, 0.3024, 0.0052,
@@ -73,7 +73,7 @@ void test2() {
 		0.0270, 0.1614, 0.8181,
 		0.6542, 0.5209, 0.2208,
 		0.9032, 0.7265, 0.2788
-	}, {2, 2, 3, 3}, Device::cuda());
+	}, MyTorch::data_t::FLOAT32, {2, 2, 3, 3}, Device::cuda());
 
 	Tensor conv_output_grad = Tensor::from_data({
 		0.4389, 0.6895, 0.6377, 0.4156, 0.8253,
@@ -87,7 +87,7 @@ void test2() {
 		0.8688, 0.2989, 0.4625, 0.6204, 0.2190,
 		0.5284, 0.7636, 0.3465, 0.0790, 0.9961,
 		0.1740, 0.1176, 0.1962, 0.9571, 0.3933
-	}, {1, 2, 5, 5}, Device::cuda());
+	}, MyTorch::data_t::FLOAT32, {1, 2, 5, 5}, Device::cuda());
 
 	printf("Input image:\n");
 	input_img.print();
@@ -108,10 +108,10 @@ void test2() {
 		2.6944, 3.9694, 4.6279, 5.0748, 3.5802,
 		2.8861, 4.7688, 5.4489, 5.1691, 3.6370,
 		2.1155, 3.9127, 4.0236, 3.3183, 1.7081
-	}, {1, 2, 5, 5}, Device::cuda());
+	}, MyTorch::data_t::FLOAT32, {1, 2, 5, 5}, Device::cuda());
 
 	MyTorch::OpContext cxt;
-	Tensor conv_output = MyTorch::conv_forward_manual(input_img, kernel, cxt);
+	Tensor conv_output = MyTorch::conv_forward_manual({input_img, kernel}, cxt, NULL);
 	printf("Conv output:\n");
 	conv_output.print();
 	auto [input_grad, kernel_grad] = MyTorch::conv_backward_manual(conv_output_grad, cxt);
@@ -137,7 +137,7 @@ void test3() {
 		0.0970, 0.3121, 0.5835, 0.9967, 0.5118, 0.2591,
 		0.5507, 0.8006, 0.8614, 0.6140, 0.1617, 0.1953,
 		0.7542, 0.8370, 0.7664, 0.3321, 0.1819, 0.4984
-	}, {1, 2, 6, 6}, Device::cuda());
+	}, MyTorch::data_t::FLOAT32, {1, 2, 6, 6}, Device::cuda());
 	Tensor output_grad = Tensor::from_data({
 		0.4389, 0.6895, 0.6377,
 		0.4156, 0.8253, 0.0522,
@@ -146,7 +146,7 @@ void test3() {
 		0.4048, 0.4524, 0.6625,
 		0.4824, 0.2167, 0.0864,
 		0.8571, 0.3407, 0.6353
-	}, {1, 2, 3, 3}, Device::cuda());
+	}, MyTorch::data_t::FLOAT32, {1, 2, 3, 3}, Device::cuda());
 
 	Tensor input_grad_reference = Tensor::from_data({
 		0.4389, 0.0000, 0.6895, 0.0000, 0.0000, 0.0000,
@@ -162,7 +162,7 @@ void test3() {
 		0.0000, 0.0000, 0.0000, 0.2167, 0.0864, 0.0000,
 		0.0000, 0.0000, 0.3407, 0.0000, 0.0000, 0.0000,
 		0.0000, 0.8571, 0.0000, 0.0000, 0.0000, 0.6353,
-	}, {1, 2, 6, 6}, Device::cuda());
+	}, MyTorch::data_t::FLOAT32, {1, 2, 6, 6}, Device::cuda());
 	Tensor output_reference = Tensor::from_data({
 		0.9022, 0.8799, 0.6192,
 		0.7272, 0.9295, 0.9182,
@@ -171,7 +171,7 @@ void test3() {
 		0.5692, 0.8880, 0.9180,
 		0.8530, 0.9967, 0.5118,
 		0.8370, 0.8614, 0.4984
-	}, {1, 2, 3, 3}, Device::cuda());
+	}, MyTorch::data_t::FLOAT32, {1, 2, 3, 3}, Device::cuda());
 
 	printf("Input image:\n");
 	input_img.print();
@@ -179,7 +179,9 @@ void test3() {
 	output_grad.print();
 
 	MyTorch::OpContext ctx;
-	Tensor output = MyTorch::pooling_forward_manual(input_img, 2, ctx);
+	MyTorch::Pooling_args args;
+	args.pool_size = 2;
+	Tensor output = MyTorch::pooling_forward_manual({input_img}, ctx, &args);
 	printf("Output:\n");
 	output.print();
 	Tensor input_grad = MyTorch::pooling_backward_manual(output_grad, ctx);
@@ -200,24 +202,24 @@ void test4() {
 		0.6365, 0.0589, 0.8914, 0.0487, 0.5470, 0.7478, 0.6194, 0.9568, 0.9439,
 		0.9366, 0.3571, 0.0724, 0.8578, 0.7720, 0.3828, 0.7801, 0.0545, 0.6946,
 		0.9337, 0.1366, 0.0075, 0.6953, 0.2300, 0.2982, 0.5964, 0.8812, 0.2708
-	}, {10, 9}, Device::cuda());
+	}, MyTorch::data_t::FLOAT32, {10, 9}, Device::cuda());
 	Tensor ground_truth = Tensor::from_int_data({
 		1, 8, 2, 6, 0, 8, 1, 7, 3, 5
-	}, {10},  Device::cuda());
+	}, MyTorch::data_t::INT32, {10},  Device::cuda());
 	Tensor output_grad = Tensor::from_data({
 		0.3834, 0.0781, 0.2414, 0.7319, 0.7889, 0.2854, 0.7927, 0.7831, 0.4025, 0.8183
-	}, {10}, Device::cuda());
+	}, MyTorch::data_t::FLOAT32, {10}, Device::cuda());
 
 	printf("Input:\n");
 	input.print();
 	printf("Ground truth:\n");
-	ground_truth.print_int();
+	ground_truth.print();
 	printf("Output grad:\n");
 	output_grad.print();
 
 	Tensor loss_reference = Tensor::from_data({
 		2.3378, 1.9665, 2.6597, 2.4026, 1.9823, 2.1951, 1.9936, 1.8945, 1.9324, 2.3997
-	}, {10}, Device::cuda());
+	}, MyTorch::data_t::FLOAT32, {10}, Device::cuda());
 	Tensor input_grad_reference = Tensor::from_data({
 		0.0480, -0.3464,  0.0548,  0.0271,  0.0573,  0.0269,  0.0437,  0.0385, 0.0501,
 		0.0060,  0.0052,  0.0090,  0.0089,  0.0054,  0.0131,  0.0065,  0.0131, -0.0672,
@@ -229,10 +231,10 @@ void test4() {
 		0.0855,  0.0480,  0.1103,  0.0475,  0.0782,  0.0956,  0.0840, -0.6653, 0.1163,
 		0.0631,  0.0353,  0.0266, -0.3442,  0.0535,  0.0362,  0.0539,  0.0261, 0.0495,
 		0.1402,  0.0632,  0.0555,  0.1105,  0.0694, -0.7440,  0.1001,  0.1330, 0.0722
-	}, {10, 9}, Device::cuda());
+	}, MyTorch::data_t::FLOAT32, {10, 9}, Device::cuda());
 
 	MyTorch::OpContext cxt;
-	Tensor loss = MyTorch::softmax_and_CELoss_forward_manual(input, ground_truth, cxt);
+	Tensor loss = MyTorch::softmax_and_CELoss_forward_manual({input, ground_truth}, cxt, NULL);
 	printf("Loss:\n");
 	loss.print();
 
